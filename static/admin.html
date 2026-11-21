@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Staff view</title><link rel="stylesheet" href="style.css"></head>
+<body><div class="wrap">
+<h1>Staff view</h1>
+<form class="compose" id="f" style="padding:16px 0;border:0"><input id="t" type="password" placeholder="Admin token (ADMIN_TOKEN in .env)" aria-label="Admin token">
+<button class="primary" style="padding:12px 20px">Load</button></form>
+<div id="out"></div>
+</div>
+<script>
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function table(title, rows, cols){
+  if(!rows.length) return `<h2>${title}</h2><p>Nothing yet.</p>`;
+  return `<h2>${title}</h2><div class="scroll"><table><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>` +
+    rows.map(r=>`<tr>${cols.map(c=>`<td>${esc(r[c])}</td>`).join('')}</tr>`).join('') + '</table></div>';
+}
+document.getElementById('f').addEventListener('submit', async e => {
+  e.preventDefault(); const out = document.getElementById('out');
+  const r = await fetch('/api/admin/overview', {headers:{'X-Admin-Token':document.getElementById('t').value}});
+  if(!r.ok){ out.innerHTML = '<p>Wrong token, or ADMIN_TOKEN is not set on the server.</p>'; return; }
+  const d = await r.json();
+  out.innerHTML = table('Appointments', d.appointments, ['ref','name','phone','service_name','dentist','start','status','channel']) +
+    table('Needs a human', d.handoffs, ['id','channel','phone','reason','summary','status','created_at']) +
+    table('Confirmations sent', d.outbox, ['medium','to_addr','status','body','created_at']) +
+    table('Conversations', d.conversations, ['session_id','channel','messages','last_seen']);
+});
+</script></body></html>

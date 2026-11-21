@@ -1,0 +1,58 @@
+{
+  "_note": "SAMPLE DATA - replace everything below with your real clinic details. This file is the single source of truth for both the chatbot and the voicebot.",
+  "name": "BrightSmile Dental Clinic",
+  "assistant_name": "Sophie",
+  "phone": "+1 555 010 2030",
+  "email": "hello@brightsmile.example",
+  "address": "42 Main Street, Springfield",
+  "timezone": "UTC",
+  "currency": "$",
+  "ref_prefix": "BS",
+  "slot_minutes": 30,
+  "min_notice_minutes": 60,
+  "booking_horizon_days": 90,
+  "hours": {
+    "mon": [["09:00", "13:00"], ["14:00", "18:00"]],
+    "tue": [["09:00", "13:00"], ["14:00", "18:00"]],
+    "wed": [["09:00", "13:00"], ["14:00", "18:00"]],
+    "thu": [["09:00", "13:00"], ["14:00", "18:00"]],
+    "fri": [["09:00", "13:00"], ["14:00", "17:00"]],
+    "sat": [["09:00", "13:00"]],
+    "sun": []
+  },
+  "holidays": ["2026-12-25", "2026-12-26", "2027-01-01"],
+  "dentists": [
+    {"name": "Dr. Emma Collins", "specialty": "General & cosmetic dentistry"},
+    {"name": "Dr. Raj Patel", "specialty": "Endodontics, implants & children"}
+  ],
+  "services": [
+    {"id": "consultation", "name": "Dental consultation", "duration": 30, "price": "$40", "description": "Examination and treatment plan discussion."},
+    {"id": "checkup_cleaning", "name": "Check-up & professional cleaning", "duration": 45, "price": "$80", "description": "Exam, scale and polish. Recommended every 6 months."},
+    {"id": "kids_checkup", "name": "Children's check-up", "duration": 30, "price": "$60", "description": "Gentle exam and cleaning for children under 14."},
+    {"id": "filling", "name": "Tooth filling (white composite)", "duration": 60, "price": "$150 - $250 per tooth", "description": "Depends on the size and position of the cavity."},
+    {"id": "whitening", "name": "Teeth whitening", "duration": 60, "price": "$300", "description": "In-clinic whitening, results in one session."},
+    {"id": "extraction", "name": "Tooth extraction", "duration": 45, "price": "$120 - $300", "description": "Simple or surgical, depending on the case."},
+    {"id": "root_canal", "name": "Root canal treatment", "duration": 90, "price": "$600 - $900", "description": "Price depends on the tooth. Final quote after exam."},
+    {"id": "crown", "name": "Dental crown", "duration": 90, "price": "$800 - $1,200", "description": "Ceramic crown, fitted in two visits."},
+    {"id": "braces_consult", "name": "Braces / aligners consultation", "duration": 30, "price": "Free", "description": "Assessment and options for braces or clear aligners."},
+    {"id": "emergency", "name": "Emergency visit (pain, broken tooth)", "duration": 30, "price": "$90", "description": "Same-day slots whenever possible."}
+  ],
+  "policies": [
+    "Please arrive 10 minutes early for your first visit.",
+    "Cancel or reschedule at least 24 hours in advance; late cancellations may incur a $30 fee.",
+    "We accept cash, all major cards, and bank transfer.",
+    "We work with most major insurers; bring your insurance card. Direct billing depends on your plan, so a team member confirms coverage."
+  ],
+  "faqs": [
+    {"q": "Do you accept insurance?", "a": "Yes, we work with most major insurance providers. Please bring your insurance card to the visit. Exact coverage depends on your plan, and our team can verify it for you."},
+    {"q": "What payment methods do you accept?", "a": "Cash, all major credit and debit cards, and bank transfer. Payment plans are available for treatments over $500."},
+    {"q": "I have a toothache or dental emergency. What should I do?", "a": "Call us right away or book an emergency visit; we keep same-day slots free. If you have severe swelling affecting your breathing or swallowing, or heavy bleeding that will not stop, go to the nearest emergency room."},
+    {"q": "Is there parking?", "a": "Yes, there is free parking behind the clinic and a public car park 2 minutes away."},
+    {"q": "Do you treat children?", "a": "Yes. Dr. Patel loves working with children, and we offer gentle children's check-ups from age 2."},
+    {"q": "How often should I get a cleaning?", "a": "We recommend a check-up and professional cleaning every six months."},
+    {"q": "Does a root canal hurt?", "a": "Modern root canal treatment is done under local anaesthetic and feels similar to getting a filling."},
+    {"q": "What should I bring to my first visit?", "a": "An ID, your insurance card if you have one, and a list of any medication you take. Arrive 10 minutes early to fill in a short form."},
+    {"q": "Is teeth whitening safe?", "a": "Yes, professional whitening is safe when done after an exam. Some temporary sensitivity is normal."},
+    {"q": "Do you offer payment plans?", "a": "Yes, interest-free payment plans for treatments over $500. Our team can set this up at your visit."}
+  ]
+}

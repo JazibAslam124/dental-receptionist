@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chat with our receptionist</title><link rel="stylesheet" href="style.css"></head>
+<body><div class="shell">
+<aside>
+  <h1 id="clinic">Dental clinic</h1>
+  <p>Book, move or cancel a visit, or ask about treatments and prices. Replies are instant.</p>
+  <dl><dt>Opening hours</dt><dd>Mon-Thu 09:00-18:00
+Fri 09:00-17:00
+Sat 09:00-13:00</dd>
+  <dt>Prefer to talk?</dt><dd id="phone"></dd></dl>
+  <div class="nav"><a href="voice.html">Voice demo</a><a href="admin.html">Staff view</a></div>
+</aside>
+<main>
+  <div id="log" role="log" aria-live="polite"></div>
+  <div class="chips" id="chips">
+    <button>Book an appointment</button><button>How much is a cleaning?</button>
+    <button>What are your opening hours?</button><button>Talk to a person</button>
+  </div>
+  <form class="compose" id="f"><input id="q" autocomplete="off" placeholder="Type your message" aria-label="Message" required>
+  <button class="primary" id="send">Send</button></form>
+</main></div>
+<script>
+const sid = localStorage.getItem('sid') || ('w' + crypto.randomUUID().replace(/-/g,''));
+localStorage.setItem('sid', sid);
+const log = document.getElementById('log'), q = document.getElementById('q'), send = document.getElementById('send');
+function add(text, cls){ const d = document.createElement('div'); d.className = 'msg ' + cls; d.textContent = text; log.appendChild(d); log.scrollTop = log.scrollHeight; return d; }
+async function ask(text){
+  add(text,'me'); send.disabled = true; const t = add('Typing...','bot typing');
+  try{
+    const r = await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sid,message:text,channel:'web'})});
+    if(!r.ok) throw new Error(r.status); const j = await r.json(); t.remove(); add(j.reply,'bot');
+    if(j.handoff) add('A team member has been notified and will take over from here.','note');
+  }catch(e){ t.remove(); add('Message not sent. Check your connection and try again.','note'); }
+  send.disabled = false; q.focus();
+}
+document.getElementById('f').addEventListener('submit', e => { e.preventDefault(); const v = q.value.trim(); if(!v) return; q.value=''; ask(v); });
+document.getElementById('chips').addEventListener('click', e => { if(e.target.tagName==='BUTTON') ask(e.target.textContent); });
+(async()=>{
+  try{ const c = await (await fetch('/api/clinic')).json(); document.getElementById('clinic').textContent = c.name; document.getElementById('phone').textContent = c.phone + '\n' + c.address; document.title = c.name; }catch(e){}
+  try{ const h = (await (await fetch('/api/history/'+sid)).json()).messages; h.forEach(m => add(m.content, m.role==='user'?'me':'bot')); if(h.length) document.getElementById('chips').remove(); }catch(e){}
+  if(!log.children.length) add('Hello, I\'m the virtual receptionist. What can I help you with today?','bot');
+})();
+</script></body></html>

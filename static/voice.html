@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Voice receptionist demo</title><link rel="stylesheet" href="style.css"></head>
+<body><div class="shell">
+<aside>
+  <h1>Voice receptionist</h1>
+  <p>Test the phone assistant in your browser. It uses the same brain and calendar as the real phone line. Use Chrome or Edge, and allow the microphone.</p>
+  <div class="nav"><a href="index.html">Back to chat</a></div>
+</aside>
+<main>
+  <div class="stage"><button id="mic">Start call</button><div id="status">Press the button and start talking.</div></div>
+  <div id="log" style="max-height:40%" role="log"></div>
+</main></div>
+<script>
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const sid = 'v' + crypto.randomUUID().replace(/-/g,'');
+const mic = document.getElementById('mic'), status = document.getElementById('status'), log = document.getElementById('log');
+let active = false, busy = false, rec;
+function add(t, c){ const d = document.createElement('div'); d.className='msg '+c; d.textContent=t; log.appendChild(d); log.scrollTop=log.scrollHeight; }
+function speak(text, done){
+  const u = new SpeechSynthesisUtterance(text); u.lang = 'en-US'; u.onend = done; u.onerror = done; speechSynthesis.cancel(); speechSynthesis.speak(u);
+}
+function listen(){
+  if(!active || busy) return;
+  rec = new SR(); rec.lang = 'en-US'; rec.interimResults = false;
+  rec.onstart = () => status.textContent = 'Listening...';
+  rec.onresult = e => { busy = true; handle(e.results[0][0].transcript); };
+  rec.onerror = () => {};
+  rec.onend = () => { if(active && !busy) setTimeout(listen, 250); };
+  try{ rec.start(); }catch(e){}
+}
+async function handle(text){
+  add(text,'me'); status.textContent = 'Thinking...';
+  try{
+    const r = await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({session_id:sid,message:text,channel:'voice'})});
+    const j = await r.json(); add(j.reply,'bot'); status.textContent = 'Speaking...';
+    speak(j.reply, () => { busy = false; if(j.handoff){ add('Transferring you to a team member.','note'); stop(); } else listen(); });
+  }catch(e){ busy = false; status.textContent = 'Connection problem.'; listen(); }
+}
+function stop(){ active = false; busy = false; try{rec.stop()}catch(e){} speechSynthesis.cancel(); mic.textContent='Start call'; mic.classList.remove('live'); status.textContent='Call ended.'; }
+mic.onclick = () => {
+  if(!SR){ status.textContent = 'This browser has no speech recognition. Use Chrome or Edge.'; return; }
+  if(active){ stop(); return; }
+  active = true; busy = true; mic.textContent='End call'; mic.classList.add('live');
+  const hi = 'Thank you for calling. I am the virtual receptionist. How can I help you today?';
+  add(hi,'bot'); speak(hi, () => { busy = false; listen(); });
+};
+</script></body></html>
